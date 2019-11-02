@@ -157,6 +157,7 @@ public class DrPepper extends LinearOpMode {
 		leftRear = hardwareMap.dcMotor.get("leftRear");
 		float robotx;
 		float roboty;
+		float robotU;
 		//	webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 		
 		/*
@@ -397,7 +398,8 @@ public class DrPepper extends LinearOpMode {
 				
 				robotx = translation.get(0);
 				roboty = translation.get(1);
-				driveFromTo(robotx, roboty,testPosX,testPosY );
+				robotU = rotation.thirdAngle;
+				driveFromTowards(robotx, roboty,robotU, testPosX,testPosY );
 			}
 			else {
 				// tries to find a target by rotating
@@ -426,8 +428,16 @@ public class DrPepper extends LinearOpMode {
 		leftRear.setPower(leftRearPower);
 		rightRear.setPower(rightRearPower);
 	}
-	public void driveFromTo(float robotx, float robotY, float driveToX, float driveToY){
-		drive(1, Math.atan2(driveToX - robotx, driveToY - robotY), 0);
+	public void driveFromTowards(float robotx, float robotY, float currentAngle, float driveToX, float driveToY){
+		double targetAngle =  Math.atan2(driveToX - robotx, driveToY - robotY);
+		double moveAngle;
+		if( targetAngle - currentAngle < 0){
+			moveAngle = Math.PI * 2 - targetAngle - currentAngle;
+		}
+		else{
+			moveAngle = targetAngle - currentAngle;
+		}
+		drive(1,moveAngle, 0);
 	}
 	
 }
