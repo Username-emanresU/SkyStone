@@ -44,6 +44,7 @@ public class ItsSoCool extends LinearOpMode{
         boolean upAlreadyPressed = false;
         boolean downAlreadyPressed = true;
         int armLevel = 0;
+        int previousArmLevel = 0;
         waitForStart();
         
         armExtention.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -77,11 +78,11 @@ public class ItsSoCool extends LinearOpMode{
             
             //Sets the arm level(the actual moving the arm part is later)
             if(gamepad2.dpad_up && armLevel < 5 && !upAlreadyPressed){
+                previousArmLevel = armLevel;
                 armLevel++;
             }
             else if(gamepad2.dpad_down && armLevel > 0 && !downAlreadyPressed ){
-                clawSerbo.setPosition(0.53);
-                clawRotationSerbo.setPosition(0);
+                previousArmLevel = armLevel;
                 armLevel--;
             }
 
@@ -108,7 +109,7 @@ public class ItsSoCool extends LinearOpMode{
             }
             
             // the power for the wheel intake
-            if(gamepad2.left_trigger){
+            if(gamepad2.left_bumper){
                 wheelIntake.setPower(1);
             }
             else{
@@ -133,7 +134,7 @@ public class ItsSoCool extends LinearOpMode{
                 downAlreadyPressed = false;
             }
             // This is defined at the bottom
-            setArmLevel(armLevel);
+            setArmLevel(armLevel, previousArmLevel);
 
             telemetry.addData("Arm Level", armLevel);
             telemetry.addData("Arm position", armDirection.getCurrentPosition());
@@ -159,11 +160,28 @@ public class ItsSoCool extends LinearOpMode{
     rightRear.setPower(rightRearPower);
     }
     
-    public void setArmLevel(int armLevel){
-        //The arm has 5 levels that are predetermined positions with no pattern
+    public void setArmLevel(int armLevel, int previousArmLevel){
+        //The arm has 5 levels that are predetermined positions with no pattern, and the 6th is the arm flip
         if(!armDirection.isBusy()){
-            if(armLevel == 5) {
-                armDirection.setTargetPosition(0);
+            if(armLevel == 6){
+                
+                clawRotationSerbo.setPosition(0);
+                //only changes position if the clawRotationServo is in the right place
+                if(clawRotationSerbo.getPosition() == 0){
+                    armDirection.setTargetPosition(-1);
+                }
+            }
+            else if(armLevel == 5) {
+                if(previousArmLevel == 6) {
+                    clawRotationSerbo.setPosition(0);
+                    //only changes position if the clawRotationServo is in the right place
+                    if (clawRotationSerbo.getPosition() == 0) {
+                        armDirection.setTargetPosition(0);
+                    }
+                }
+                else{
+                    armDirection.setTargetPosition(0);
+                }
             }
             else if (armLevel == 4) {
                 armDirection.setTargetPosition(1);
