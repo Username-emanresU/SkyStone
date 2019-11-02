@@ -47,8 +47,11 @@ public class ItsSoCool extends LinearOpMode{
         int previousArmLevel = 0;
         waitForStart();
         
-        armExtention.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         armDirection.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        armDirection.setPower(1);
+        armDirection.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        armExtention.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    
         while(opModeIsActive()){
 
             joystickPower =  Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
@@ -77,7 +80,7 @@ public class ItsSoCool extends LinearOpMode{
             }
             
             //Sets the arm level(the actual moving the arm part is later)
-            if(gamepad2.dpad_up && armLevel < 5 && !upAlreadyPressed){
+            if(gamepad2.dpad_up && armLevel < 6 && !upAlreadyPressed){
                 previousArmLevel = armLevel;
                 armLevel++;
             }
@@ -172,6 +175,7 @@ public class ItsSoCool extends LinearOpMode{
                 }
             }
             else if(armLevel == 5) {
+                // it changes the claw servo position only when going from flipped from unflipped
                 if(previousArmLevel == 6) {
                     clawRotationSerbo.setPosition(0);
                     //only changes position if the clawRotationServo is in the right place
@@ -179,6 +183,7 @@ public class ItsSoCool extends LinearOpMode{
                         armDirection.setTargetPosition(0);
                     }
                 }
+                // for a previous position of 4, it does nothing
                 else{
                     armDirection.setTargetPosition(0);
                 }
