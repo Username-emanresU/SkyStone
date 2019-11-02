@@ -18,11 +18,13 @@ Thumbs.db
 # OSX files
 .DS_Store
 
+# The Vuforia License Key
+/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/VuforiaLicenseKey.java
+
 # Android Studio
 *.iml
 .idea
 .gradle
 build/
-
 *ASUS_PC_01*
 
