@@ -22,6 +22,7 @@ public class ItsSoCool extends LinearOpMode{
     
     private Servo flapSerbo;
     public void runOpMode() throws InterruptedException{
+
         //mecanum motors
         rightFront = hardwareMap.dcMotor.get("rightFront");
         leftFront = hardwareMap.dcMotor.get("leftFront");
@@ -52,22 +53,25 @@ public class ItsSoCool extends LinearOpMode{
             joystickPower =  Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
             joystickAngle =  Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
             rightStickDirection = gamepad1.right_stick_x;
+
             // controls the mechanum wheels with the left joystick for direction, and the right for rotation
             drive(joystickPower, joystickAngle, rightStickDirection );
 
-            // the thing for the claw
-            if (gamepad1.dpad_up){
+            // the opening the claw
+            if (gamepad2.dpad_up){
                 clawSerbo.setPosition(0.53);
             }
-            else if (gamepad1.dpad_down){
+            // the closes the claw
+            else if (gamepad2.dpad_down){
                 clawSerbo.setPosition(0.40);
             }
 
-            // rotates the claw
-            if (gamepad1.dpad_left){
+            // rotates the claw left
+            if (gamepad2.dpad_left){
                 clawRotationSerbo.setPosition(0);
             }
-            else if(gamepad1.dpad_right){
+            // rotates the claw right
+            else if(gamepad2.dpad_right){
                 clawRotationSerbo.setPosition(0.5);
             }
             
@@ -75,16 +79,20 @@ public class ItsSoCool extends LinearOpMode{
             if(gamepad2.dpad_up && armLevel < 5 && !upAlreadyPressed){
                 armLevel++;
             }
-            else if(gamepad2.dpad_down && armLevel > 0 && !downAlreadyPressed){
+            else if(gamepad2.dpad_down && armLevel > 0 && !downAlreadyPressed ){
+                clawSerbo.setPosition(0.53);
+                clawRotationSerbo.setPosition(0);
                 armLevel--;
             }
 
             
-            //Extends / retracts the arm
-            if(gamepad1.left_bumper && armExtention.getCurrentPosition() < -200){
+            //Extends the arm
+            if(gamepad2.left_bumper && armExtention.getCurrentPosition() < -200 ){
+
                 armExtention.setPower(1);
             }
-            else if(gamepad1.right_bumper && armExtention.getCurrentPosition() > -1800){
+            // Retracts the arm
+            else if(gamepad2.right_bumper && armExtention.getCurrentPosition() > -1800 ){
                 armExtention.setPower(-1);
             }
             else{
@@ -92,15 +100,15 @@ public class ItsSoCool extends LinearOpMode{
             }
             
             //Does the flap part
-            if(gamepad1.a){
+            if(gamepad2.a){
                 flapSerbo.setPosition(1);
             }
-            else if(gamepad1.b){
+            else if(gamepad2.b){
                 flapSerbo.setPosition(0);
             }
             
             // the power for the wheel intake
-            if(gamepad2.a){
+            if(gamepad2.left_trigger){
                 wheelIntake.setPower(1);
             }
             else{
@@ -108,7 +116,7 @@ public class ItsSoCool extends LinearOpMode{
             }
             
             //allows you to run something the instant a button is pushed instead of the entire time the button is pushed
-            if(gamepad1.dpad_up){
+            if(gamepad2.dpad_up){
                 if(!upAlreadyPressed){
                     upAlreadyPressed = true;
                 }
@@ -116,7 +124,7 @@ public class ItsSoCool extends LinearOpMode{
             else{
                 upAlreadyPressed = false;
             }
-            if(gamepad1.dpad_down){
+            if(gamepad2.dpad_down){
                 if(!downAlreadyPressed){
                     downAlreadyPressed = true;
                 }
