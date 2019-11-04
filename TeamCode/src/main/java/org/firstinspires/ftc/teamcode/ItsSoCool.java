@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "ItsSoCool", group = "")
@@ -22,7 +23,7 @@ public class ItsSoCool extends LinearOpMode{
     
     private Servo flapSerbo;
     public void runOpMode() throws InterruptedException{
-
+        
         //mecanum motors
         rightFront = hardwareMap.dcMotor.get("rightFront");
         leftFront = hardwareMap.dcMotor.get("leftFront");
@@ -38,6 +39,7 @@ public class ItsSoCool extends LinearOpMode{
         clawRotationSerbo = hardwareMap.servo.get("serbo1");
         flapSerbo = hardwareMap.servo.get("servo2");
         wheelIntake = hardwareMap.dcMotor.get("wheelIntake");
+        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
         double joystickAngle;
         double joystickPower;
         double rightStickDirection;
@@ -76,7 +78,7 @@ public class ItsSoCool extends LinearOpMode{
             }
             // rotates the claw right
             else if(gamepad2.dpad_right){
-                clawRotationSerbo.setPosition(0.5);
+                clawRotationSerbo.setPosition(1);
             }
             
             //Sets the arm level(the actual moving the arm part is later)
