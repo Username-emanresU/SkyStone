@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "ItsSoCool", group = "")
-public class ItsSoCool extends LinearOpMode{
+public class ItsSoCool extends LinearOpMode {
 	private DcMotor rightFront;
 	private DcMotor leftFront;
 	private DcMotor rightRear;
@@ -21,13 +21,14 @@ public class ItsSoCool extends LinearOpMode{
 	private Servo clawRotationSerbo;
 	
 	private Servo flapSerbo;
-	public void runOpMode() throws InterruptedException{
+	
+	public void runOpMode() throws InterruptedException {
 		//mecanum motors
 		rightFront = hardwareMap.dcMotor.get("rightFront");
 		leftFront = hardwareMap.dcMotor.get("leftFront");
 		rightRear = hardwareMap.dcMotor.get("rightRear");
 		leftRear = hardwareMap.dcMotor.get("leftRear");
-		
+
 		//arm motors
 		armExtention = hardwareMap.dcMotor.get("arm");
 		armDirection = hardwareMap.dcMotor.get("slide");
@@ -46,83 +47,75 @@ public class ItsSoCool extends LinearOpMode{
 		waitForStart();
 		
 		armExtention.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		armDirection.setTargetPosition(0);
 		armDirection.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		while(opModeIsActive()){
+		while (opModeIsActive()) {
 			
-			joystickPower =  Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
-			joystickAngle =  Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
+			joystickPower = Math.atan2(gamepad1.left_stick_y, gamepad1.left_stick_x);
+			joystickAngle = Math.hypot(gamepad1.left_stick_y, gamepad1.left_stick_x);
 			rightStickDirection = gamepad1.right_stick_x;
 			// controls the mechanum wheels with the left joystick for direction, and the right for rotation
-			drive(joystickPower, joystickAngle, rightStickDirection );
+			drive(joystickPower, joystickAngle, rightStickDirection);
 			
 			// the thing for the claw
-			if (gamepad2.dpad_up){
+			if (gamepad2.dpad_up) {
 				clawSerbo.setPosition(0.53);
-			}
-			else if (gamepad2.dpad_down){
+			} else if (gamepad2.dpad_down) {
 				clawSerbo.setPosition(0.40);
 			}
 			
 			// rotates the claw
 			
-			if (gamepad2.dpad_left){
+			if (gamepad2.dpad_left) {
 				clawRotationSerbo.setPosition(0);
-			}
-			else if(gamepad2.dpad_right){
+			} else if (gamepad2.dpad_right) {
 				clawRotationSerbo.setPosition(0.5);
 			}
 			
 			//Sets the arm level(the actual moving the arm part is later)
-			if(gamepad1.dpad_up && armLevel < 5 && !upAlreadyPressed){
+			if (gamepad1.dpad_up && armLevel < 5 && !upAlreadyPressed) {
 				armLevel++;
-			}
-			else if(gamepad1.dpad_down && armLevel > 0 && !downAlreadyPressed){
+			} else if (gamepad1.dpad_down && armLevel > 0 && !downAlreadyPressed) {
 				armLevel--;
 			}
 			
 			
 			//Extends / retracts the arm
-			if(gamepad2.left_bumper && armExtention.getCurrentPosition() < -200){
+			if (gamepad2.left_bumper && armExtention.getCurrentPosition() < -200) {
 				armExtention.setPower(1);
-			}
-			else if(gamepad2.right_bumper && armExtention.getCurrentPosition() > -1800){
+			} else if (gamepad2.right_bumper && armExtention.getCurrentPosition() > -1800) {
 				armExtention.setPower(-1);
-			}
-			else{
+			} else {
 				armExtention.setPower(0);
 			}
 			
 			//Does the flap part
-			if(gamepad2.a){
+			if (gamepad2.a) {
 				flapSerbo.setPosition(1);
-			}
-			else if(gamepad2.b){
+			} else if (gamepad2.b) {
 				flapSerbo.setPosition(0);
 			}
 			
 			// the power for the wheel intake
-			if(gamepad2.x){
+			if (gamepad2.x) {
 				wheelIntake.setPower(1);
-			}
-			else{
+			} else {
 				wheelIntake.setPower(0);
 			}
 			
 			//allows you to run something the instant a button is pushed instead of the entire time the button is pushed
-			if(gamepad1.dpad_up){
-				if(!upAlreadyPressed){
+			if (gamepad1.dpad_up) {
+				if (!upAlreadyPressed) {
 					upAlreadyPressed = true;
 				}
-			}
-			else{
+			} else {
 				upAlreadyPressed = false;
 			}
-			if(gamepad1.dpad_down){
-				if(!downAlreadyPressed){
+			if (gamepad1.dpad_down) {
+				if (!downAlreadyPressed) {
 					downAlreadyPressed = true;
 				}
-			}
-			else{
+			} else {
 				downAlreadyPressed = false;
 			}
 			// This is defined at the bottom
@@ -131,54 +124,59 @@ public class ItsSoCool extends LinearOpMode{
 			telemetry.addData("Arm Level", armLevel);
 			telemetry.addData("Arm position", armDirection.getCurrentPosition());
 			telemetry.addData("Arm Extendedness", armExtention.getCurrentPosition());
-			telemetry.addData("Direction: ", (joystickAngle * 360/ (2 * Math.PI)));
-			telemetry.addData("Power: ", joystickPower );
-			telemetry.addData("Rotation: ", rightStickDirection );
+			telemetry.addData("Direction: ", (joystickAngle * 360 / (2 * Math.PI)));
+			telemetry.addData("Power: ", joystickPower);
+			telemetry.addData("Rotation: ", rightStickDirection);
 			telemetry.update();
 		}
 	}
-	public void drive(double power, double direction, double rotation){
+	
+	public void drive(double power, double direction, double rotation) {
 		//code for mecanum taken from (https://ftccats.github.io/software/ProgrammingMecanumWheels.html)
 		double robotAngle = direction - (Math.PI / 4);
 		
-		double leftFrontPower = (power  * Math.cos(robotAngle) - rotation);
-		double rightFrontPower = (power  * Math.sin(robotAngle) - rotation);
-		double leftRearPower =(power  * Math.sin(robotAngle) + rotation);
-		double rightRearPower = (power  * Math.cos(robotAngle) + rotation);
+		double leftFrontPower = (power * Math.cos(robotAngle) + rotation);
+		double rightFrontPower = (power * Math.sin(robotAngle) - rotation);
+		double leftRearPower = (power * Math.sin(robotAngle) + rotation);
+		double rightRearPower = (power * Math.cos(robotAngle) - rotation);
 		
-		leftFront.setPower( leftFrontPower);
+		leftFront.setPower(leftFrontPower);
 		rightFront.setPower(rightFrontPower);
 		leftRear.setPower(leftRearPower);
 		rightRear.setPower(rightRearPower);
 	}
 	
-	public void setArmLevel(int armLevel){
-		//The arm has 5 levels that are predetermined positions with no pattern
-		if(!armDirection.isBusy()){
-			if(armLevel == 5) {
+	public void setArmLevel(int armLevel) {
+		//The arm has 5 levels that are predetermined positions with no pattern the 6th is on the other side
+		if (!armDirection.isBusy()) {
+			if (armLevel == 6) {
+				armDirection.setTargetPosition(-30);
+				clawRotationSerbo.setPosition(0.5);
+				
+			}
+			
+			else if (armLevel == 5) {
 				armDirection.setTargetPosition(0);
-			}
-			else if (armLevel == 4) {
+				if (armDirection.getCurrentPosition() < 0){
+					clawRotationSerbo.setPosition(0.5);
+				}
+			} else if (armLevel == 4) {
 				armDirection.setTargetPosition(1);
-			}
-			else if (armLevel == 3) {
+			} else if (armLevel == 3) {
 				armDirection.setTargetPosition(2);
 				
-			}
-			else if (armLevel == 2) {
+			} else if (armLevel == 2) {
 				armDirection.setTargetPosition(3);
 				
-			}
-			else if (armLevel == 1) {
+			} else if (armLevel == 1) {
 				armDirection.setTargetPosition(4);
 				
-			}
-			else if (armLevel == 0) {
+			} else if (armLevel == 0) {
 				armDirection.setTargetPosition(5);
 				
 			}
 		}
 	}
-	
 }
+
 

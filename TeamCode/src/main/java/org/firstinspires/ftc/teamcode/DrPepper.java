@@ -432,7 +432,7 @@ public class DrPepper extends LinearOpMode {
 		double targetAngle =  Math.atan2(driveToX - robotx, driveToY - robotY);
 		double moveAngle;
 		if( targetAngle - currentAngle < 0){
-			moveAngle = Math.PI * 2 - targetAngle - currentAngle;
+			moveAngle = Math.PI * 2 - (targetAngle - currentAngle);
 		}
 		else{
 			moveAngle = targetAngle - currentAngle;
